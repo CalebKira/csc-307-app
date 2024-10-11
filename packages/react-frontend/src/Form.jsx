@@ -5,23 +5,22 @@ function Form(props) {
     name: "",
     job: ""
   });
-}
-export default Form;
 
-function submitForm() {
-    props.handleSubmit(person);
-    setPerson({ name: "", job: "" });
+
+  function submitForm() {
+      props.handleSubmit(person);
+      setPerson({ name: "", job: "" });
+    }
+
+  // Add the following code to src/Form.jsx
+  function handleChange(event) {
+      const { name, value } = event.target;
+      if (name === "job")
+        setPerson({ name: person["name"], job: value });
+      else setPerson({ name: value, job: person["job"] });
   }
 
-// Add the following code to src/Form.jsx
-function handleChange(event) {
-    const { name, value } = event.target;
-    if (name === "job")
-      setPerson({ name: person["name"], job: value });
-    else setPerson({ name: value, job: person["job"] });
-}
-
-return (
+  return (
     <form>
       <label htmlFor="name">Name</label>
       <input
@@ -42,3 +41,5 @@ return (
       <input type="button" value="Submit" onClick={submitForm} />
     </form>
   );
+}
+export default Form;
