@@ -21,11 +21,36 @@ const findUserByName = (name) => {
       (user) => user["name"] === name
     );
   };
+
+const findUserByJob = (job) => {
+  return users["users_list"].filter(
+    (user) => user["job"] === job
+  );
+};
+
+const findUserByNandJ = (name, job) => {
+  return users["users_list"].filter(
+    (user) => ((user["name"] === name) && (user["job"] === job))
+  );
+};
+
   
 app.get("/users", (req, res) => {
     const name = req.query.name;
-    if (name != undefined) {
+    const job = req.query.job;
+    if ((name != undefined) && (job != undefined)){
+      // console.log("yes?");
+      let result = findUserByNandJ(name, job);
+      result = { users_list: result };
+      res.send(result);
+    }
+    else if (name != undefined) {
       let result = findUserByName(name);
+      result = { users_list: result };
+      res.send(result);
+    } 
+    else if (job != undefined) {
+      let result = findUserByJob(job);
       result = { users_list: result };
       res.send(result);
     } 
@@ -103,12 +128,13 @@ app.delete("/users/:id", (req, res) => {
   }
 }); */
 
+
 const users = {
     users_list: [
       {
         id: "xyz789",
         name: "Charlie",
-        job: "Janitor"
+        job: "Bartender"
       },
       {
         id: "abc123",
