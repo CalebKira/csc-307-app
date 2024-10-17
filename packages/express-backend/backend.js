@@ -76,15 +76,21 @@ app.get("/users/:id", (req, res) => {
 });
 
 
+const uniqID = () => {
+  return String(Math.floor(Math.random() * (999 - 100) + 100));
+}
+
 const addUser = (user) => {
   users["users_list"].push(user);
+  users["users_list"][users["users_list"].length - 1].id = uniqID();
   return user;
 };
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
-  res.send();
+  res.status(201).send();
+  //res.send();
 });
 
 
