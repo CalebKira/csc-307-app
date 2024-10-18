@@ -88,8 +88,8 @@ const addUser = (user) => {
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  addUser(userToAdd);
-  res.status(201).send(json);
+  const temp = addUser(userToAdd);
+  res.status(201).send(temp);
   //res.send();
 });
 
