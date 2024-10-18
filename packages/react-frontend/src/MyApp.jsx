@@ -36,23 +36,21 @@ function MyApp() {
     return promise;
   }
 
-  function removeOneCharacter(index, row) {
+  function removeOneCharacter(index, id) {
     // need a way to get the ID of the user I want to delete. 
 
-    ID = characters[index].id;
+    let initial = "Http://localhost:8000/users/";
+    const append = String(id);
+    const myURL = initial.concat(append);
+    
 
-    myURL = "Http://localhost:8000/users/";
-    myURL = myURL.concat(String(ID));
-
-    const promise = fetch(myURL, {
+    fetch(myURL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
       },
-    });
-
-    promise
-      .then(response => {
+    })
+    .then(response => {
         if (response.status === 204) {
           const updated = characters.filter((character, i) => {
             return i !== index;
@@ -71,15 +69,19 @@ function MyApp() {
 
   function updateList(person) {
     postUser(person)
-      .then(response => {
+    .then(response => {
         if (response.status === 201) {
           // Do something if the status code is 200 (OK)
-          setCharacters([...characters, person])
+          // need to fix this person here. it's not updated with the id
+          return response.json();
         }
       })
+      .then(response => {setCharacters([...characters, response])})
+      // need to return response in a json format, then used later
       .catch((error) => {
         console.log(error);
       });
+    
   }
 
 
