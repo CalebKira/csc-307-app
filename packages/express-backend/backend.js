@@ -121,7 +121,6 @@ app.delete("/users/:id", (req, res) => {
     else {
       res.status(204).send(result);
     }
-  res.send();
 });
 
 
