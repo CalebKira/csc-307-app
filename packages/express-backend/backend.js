@@ -89,7 +89,7 @@ const addUser = (user) => {
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
   addUser(userToAdd);
-  res.status(201).send();
+  res.status(201).send(json);
   //res.send();
 });
 
@@ -119,7 +119,7 @@ app.delete("/users/:id", (req, res) => {
       res.status(404).send("User not found.");
     } 
     else {
-      res.send(result);
+      res.status(204).send(result);
     }
   res.send();
 });
