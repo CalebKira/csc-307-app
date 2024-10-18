@@ -36,16 +36,15 @@ function MyApp() {
     return promise;
   }
 
-  function removeOneCharacter(index) {
+  function removeOneCharacter(index, row) {
     // need a way to get the ID of the user I want to delete. 
-    useEffect();
 
     ID = characters[index].id;
 
     myURL = "Http://localhost:8000/users/";
     myURL = myURL.concat(String(ID));
 
-    const promise = fetch("Http://localhost:8000/users/:id", {
+    const promise = fetch(myURL, {
       method: "DELETE",
       headers: {
         "Content-Type": "application/json"
