@@ -37,10 +37,37 @@ function MyApp() {
   }
 
   function removeOneCharacter(index) {
-    const updated = characters.filter((character, i) => {
-      return i !== index;
+    // need a way to get the ID of the user I want to delete. 
+    useEffect();
+
+    ID = characters[index].id;
+
+    myURL = "Http://localhost:8000/users/";
+    myURL = myURL.concat(String(ID));
+
+    const promise = fetch("Http://localhost:8000/users/:id", {
+      method: "DELETE",
+      headers: {
+        "Content-Type": "application/json"
+      },
     });
-    setCharacters(updated);
+
+    promise
+      .then(response => {
+        if (response.status === 204) {
+          const updated = characters.filter((character, i) => {
+            return i !== index;
+          });
+          setCharacters(updated);
+        }
+        else if (response.status === 404){
+          console.log("resource not found")
+        }
+      })
+      .catch((error) => {
+        console.log(error);
+      });
+    
   }
 
   function updateList(person) {
