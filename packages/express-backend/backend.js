@@ -1,6 +1,19 @@
 // backend.js
 import express from "express";
 import cors from "cors";
+import dotenv from "dotenv";
+import mongoose from "mongoose";
+import userService from "./services/user-service.js";
+
+dotenv.config();
+
+const { MONGO_CONNECTION_STRING } = process.env;
+
+mongoose.set("debug", true);
+mongoose
+  .connect(MONGO_CONNECTION_STRING)
+  .catch((error) => console.log(error));
+
 
 const app = express();
 const port = 8000;
@@ -18,29 +31,41 @@ app.listen(port, () => {
   );
 });
 
-const findUserByName = (name) => {
-    return users["users_list"].filter(
-      (user) => user["name"] === name
-    );
-  };
+// const findUserByName = (name) => {
+//     return users["users_list"].filter(
+//       (user) => user["name"] === name
+//     );
+//   };
 
-const findUserByJob = (job) => {
-  return users["users_list"].filter(
-    (user) => user["job"] === job
-  );
-};
+// const findUserByJob = (job) => {
+//   return users["users_list"].filter(
+//     (user) => user["job"] === job
+//   );
+// };
 
-const findUserByNandJ = (name, job) => {
-  return users["users_list"].filter(
-    (user) => ((user["name"] === name) && (user["job"] === job))
-  );
-};
+// const findUserByNandJ = (name, job) => {
+//   return users["users_list"].filter(
+//     (user) => ((user["name"] === name) && (user["job"] === job))
+//   );
+// };
 
   
 app.get("/users", (req, res) => {
     const name = req.query.name;
     const job = req.query.job;
-    if ((name != undefined) && (job != undefined)){
+
+    userService.getUsers(name, job)
+    .then(result => {
+      if (result) {
+        res.send(result);
+      }
+      // don't check status, check if array is not empty. 
+    })
+    .catch(error => {
+      console.log(error)
+    });
+    
+    /* if ((name != undefined) && (job != undefined)){
       // console.log("yes?");
       let result = findUserByNandJ(name, job);
       result = { users_list: result };
@@ -58,21 +83,21 @@ app.get("/users", (req, res) => {
     } 
     else {
       res.send(users);
-    }
+    } */
 });
 
-const findUserById = (id) =>
-    users["users_list"].find((user) => user["id"] === id);
   
 app.get("/users/:id", (req, res) => {
     const id = req.params["id"]; //or req.params.id
-    let result = findUserById(id);
-    if (result === undefined) {
-      res.status(404).send("Resource not found.");
-    } 
-    else {
-      res.send(result);
-    }
+    userService.findUserById(id)
+    .then(result => {
+      if (result === undefined) {
+        res.status(404).send("Resource not found.");
+      } 
+      else {
+        res.send(result);
+      }
+    });
 });
 
 
@@ -80,47 +105,38 @@ const uniqID = () => {
   return String(Math.floor(Math.random() * (999 - 100) + 100));
 }
 
-const addUser = (user) => {
-  users["users_list"].push(user);
-  users["users_list"][users["users_list"].length - 1].id = uniqID();
-  return user;
-};
 
 app.post("/users", (req, res) => {
   const userToAdd = req.body;
-  const temp = addUser(userToAdd);
-  res.status(201).send(temp);
+  userService.addUser(userToAdd)
+  .then(result => {
+    if (result == undefined){
+      res.status(400).send("Unable to add user");
+    }
+    else {
+      res.status(201).send(result);
+    }
+  });
+  // change this one to be from userservices
+
+
   //res.send();
 });
 
 
-const deleteUser = (id) => {
-  let result = findUserById(id);
-  if (result === undefined) {
-      id = undefined;
-      return id;
-    }
-  
-  for (let index = 0; index < users["users_list"].length; index++) {
-    if (users["users_list"][index].id === id){
-      users["users_list"].splice(index, 1);
-      return id;
-    }
-  } 
-  return id;
-  
-};
 
 app.delete("/users/:id", (req, res) => {
   const userToDel = req.params["id"];
   // res.send(userToDel);
-  let result = deleteUser(userToDel);
+  userService.IDdelete(userToDel)
+  .then(result => {
     if (result === undefined) {
       res.status(404).send("User not found.");
     } 
     else {
       res.status(204).send(result);
     }
+  })
 });
 
 
@@ -135,33 +151,3 @@ app.delete("/users/:id", (req, res) => {
   }
 }); */
 
-
-const users = {
-    users_list: [
-      {
-        id: "xyz789",
-        name: "Charlie",
-        job: "Janitor"
-      },
-      {
-        id: "abc123",
-        name: "Mac",
-        job: "Bouncer"
-      },
-      {
-        id: "ppp222",
-        name: "Mac",
-        job: "Professor"
-      },
-      {
-        id: "yat999",
-        name: "Dee",
-        job: "Aspring actress"
-      },
-      {
-        id: "zap555",
-        name: "Dennis",
-        job: "Bartender"
-      }
-    ]
-  };
