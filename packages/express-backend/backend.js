@@ -101,9 +101,9 @@ app.get("/users/:id", (req, res) => {
 });
 
 
-const uniqID = () => {
+/* const uniqID = () => {
   return String(Math.floor(Math.random() * (999 - 100) + 100));
-}
+} */
 
 
 app.post("/users", (req, res) => {
